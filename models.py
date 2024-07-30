@@ -1,16 +1,48 @@
-from peewee import Model, SqliteDatabase, IntegerField, CharField
+from peewee import (Model,
+                    SqliteDatabase,
+                    IntegerField,
+                    CharField,
+                    ForeignKeyField,
+                    DateTimeField,
+                    TextField)
+import datetime
 
+# Создаем подключение к базе данных SQLite
 db = SqliteDatabase('database.db')
 
+# Базовая модель, от которой наследуются все модели
 class BaseModel(Model):
     class Meta:
+        # Указываем, что база данных для всех моделей - это 'db'
         database = db
 
+# Модель для хранения информации о пользователях
 class User(BaseModel):
-    user_id = IntegerField(unique=True)
-    first_name = CharField(null=True)
-    last_name = CharField(null=True)
-    username = CharField(null=True)
+    user_id = IntegerField(unique=True)  # Идентификатор пользователя, уникальный
+    first_name = CharField(null=True)     # Имя пользователя
+    last_name = CharField(null=True)      # Фамилия пользователя
+    username = CharField(null=True)       # Имя пользователя в Telegram
 
+    def __str__(self):
+        # Строковое представление пользователя (имя пользователя или ID)
+        return self.username or f"User: {self.user_id}"
+
+# Модель для хранения истории поиска фильмов
+class History(BaseModel):
+    user_id = ForeignKeyField(User, backref='history', on_delete='CASCADE')  # Внешний ключ на пользователя
+    date = DateTimeField(default=datetime.datetime.now)  # Дата и время поиска (по умолчанию текущее время)
+    movie_name = CharField()     # Название фильма
+    description = TextField()   # Описание фильма
+    rating = IntegerField()     # Рейтинг фильма
+    year = IntegerField()       # Год выпуска фильма
+    genres = CharField()        # Жанры фильма
+    ageRating = IntegerField()  # Возрастной рейтинг фильма
+    poster = CharField(max_length=300)  # URL постера фильма
+
+    def __str__(self):
+        # Строковое представление записи в истории (имя пользователя и название фильма)
+        return f"Search by {self.user_id.username}: {self.movie_name} at {self.date}"
+
+# Подключаемся к базе данных и создаем таблицы
 db.connect()
-db.create_tables([User])
+db.create_tables([User, History])
