@@ -6,9 +6,16 @@ from peewee import (Model,
                     DateTimeField,
                     TextField)
 import datetime
+import os
 
-# Создаем подключение к базе данных SQLite
-db = SqliteDatabase('database.db')
+# Определите путь к директории проекта (корневой директории)
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+
+# Создайте путь к базе данных в папке 'database'
+db_path = os.path.join(project_root, 'database', 'database.db')
+
+# Инициализируйте базу данных
+db = SqliteDatabase(db_path)
 
 # Базовая модель, от которой наследуются все модели
 class BaseModel(Model):

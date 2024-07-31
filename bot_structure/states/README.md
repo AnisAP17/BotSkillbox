@@ -55,25 +55,25 @@ HEADERS = {
 Ответ: Отправляет сообщение со списком команд и их описанием.
 
 
-/movie_search
+/movie_search - "https://api.kinopoisk.dev/v1.4/movie/search?limit=1&query={movie_name_url}"
 Описание: Запрашивает у пользователя название фильма для поиска.
 Использование: /movie_search
 Ответ: Запрашивает название фильма и отображает результаты поиска.
 
 
-/movie_by_rating
+/movie_by_rating - "https://api.kinopoisk.dev/v1.4/movie/search?limit=5&rating.imdb={rating}-10"
 Описание: Ищет фильмы на основе рейтинга IMDb.
 Использование: /movie_by_rating
 Ответ: Запрашивает у пользователя рейтинг и отображает результаты поиска.
 
 
-/low_budget_movie
+/low_budget_movie - "https://api.kinopoisk.dev/v1.4/movie?limit=5&selectFields=&notNullFields=budget.value&notNullFields=name&notNullFields=description&sortField=budget.value&sortType=-1"
 Описание: Находит и отображает фильмы с низким бюджетом.
 Использование: /low_budget_movie
 Ответ: Показывает список фильмов с низким бюджетом.
 
 
-/high_budget_movie
+/high_budget_movie - "https://api.kinopoisk.dev/v1.4/movie?limit=5&selectFields=&notNullFields=budget.value&notNullFields=name&notNullFields=description&sortField=budget.value&sortType=1"
 Описание: Находит и отображает фильмы с высоким бюджетом.
 Использование: /high_budget_movie
 Ответ: Показывает список фильмов с высоким бюджетом.
