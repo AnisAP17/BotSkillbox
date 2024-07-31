@@ -8,7 +8,7 @@ from peewee import (Model,
 import datetime
 import os
 
-# Определите путь к директории проекта (корневой директории)
+# Определите путь к директории проекта 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
 # Создайте путь к базе данных в папке 'database'
