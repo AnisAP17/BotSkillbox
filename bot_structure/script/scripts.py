@@ -21,13 +21,13 @@ def movie_info(message: Message, movie):
             ageRating = movie.get('ageRating', 'N/A')
             poster = movie.get('poster', {}).get('url', 'N/A')
             bot.reply_to(message,
-                    text=(f"Title: {title}\n"
-                        f"Description: {truncated_description}\n"
-                        f"Rating: {rating}\n"
-                        f"Year: {year}\n"
-                        f"Genres: {genres_list}\n"
-                        f"AgeRating: {ageRating}\n"
-                        f"Poster: {poster}")
+                    text=(f"Название: {title}\n"
+                        f"Описание: {truncated_description}\n"
+                        f"Рейтинг: {rating}\n"
+                        f"Год: {year}\n"
+                        f"Жанры: {genres_list}\n"
+                        f"Возрастное ограничение: {ageRating}+\n"
+                        f"Постер: {poster}")
                         )
     else:
         return "Movie not found."
@@ -35,7 +35,7 @@ def movie_info(message: Message, movie):
 
 
 def limit_search_movie(message: Message):
-    msg = bot.reply_to(message, "Please enter the number of options:")
+    msg = bot.reply_to(message, "Введите количество вариантов:")
     bot.register_next_step_handler(msg, search_movie, message.text)
 
 
@@ -128,13 +128,13 @@ def search_history_user(message: Message, start_date, end_date):
             for user_history in history:
                 bot.send_message(
                     chat_id=message.chat.id,
-                    text=(f"Title: {user_history.movie_name}\n"
-                        f"Description: {user_history.description}\n"
-                        f"Rating: {user_history.rating}\n"
-                        f"Year: {user_history.year}\n"
-                        f"Genres: {user_history.genres}\n"
-                        f"Age Rating: {user_history.ageRating}\n"
-                        f"Poster: {user_history.poster}")
+                    text=(f"Название: {user_history.movie_name}\n"
+                        f"Описнаие: {user_history.description}\n"
+                        f"Рейтинг: {user_history.rating}\n"
+                        f"Год: {user_history.year}\n"
+                        f"Жанры: {user_history.genres}\n"
+                        f"Возрастное ограничение: {user_history.ageRating}+\n"
+                        f"Постер: {user_history.poster}")
                             )
         else:
             bot.send_message(message.chat.id, 'История не найдена.')

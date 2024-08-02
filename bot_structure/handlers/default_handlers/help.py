@@ -10,4 +10,4 @@ def help_command(message: Message):
     help_text = ""
     for command, description in DEFAULT_COMMANDS:
         help_text += f"\n/{command} - {description}"
-    bot.send_message(message.from_user.id, f"This movie search bot has all its features: {help_text}")
+    bot.send_message(message.from_user.id, f"Этот бот для поиска фильмов обладает всеми его функциями: {help_text}")

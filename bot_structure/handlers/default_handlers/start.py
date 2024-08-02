@@ -19,6 +19,6 @@ def start_bot(message: Message):
 
     # Отправляем приветственное сообщение в зависимости от того, был ли пользователь создан
     if created:
-        bot.reply_to(message, "Welcome!")
+        bot.reply_to(message, "Добро пожаловать!")
     else:
-        bot.reply_to(message, f"Nice to see you again, {first_name}!")
+        bot.reply_to(message, f"Рад снова тебя видеть, {first_name}!")

@@ -6,6 +6,6 @@ from script.scripts import limit_search_movie
 @bot.message_handler(commands=['movie_search'])
 def movie_search(message: Message):
     # Запрашиваем у пользователя название фильма
-    msg = bot.reply_to(message, "Please enter the name of the movie:")
+    msg = bot.reply_to(message, "Введите название фильма:")
     # Регистрируем следующий шаг после получения ответа пользователя
     bot.register_next_step_handler(msg, limit_search_movie)

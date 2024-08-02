@@ -31,7 +31,7 @@ def send_history(message: types.Message):
 
     # Если история пуста, сообщаем об этом пользователю
     if total_pages == 0:
-        bot.send_message(message.chat.id, 'No history found.')
+        bot.send_message(message.chat.id, 'История не найдена.')
         return
 
     # Инициализируем пагинатор
@@ -45,7 +45,7 @@ def send_history(message: types.Message):
     records = get_records_for_page(user_id, 1, records_per_page)
 
     # Формируем сообщение
-    text = "\n\n".join([f"Title: {record.movie_name}\nDescription: {record.description}\nDate: {record.date}\nPoster: {record.poster}" for record in records])
+    text = "\n\n".join([f"Название: {record.movie_name}\n\Описание: {record.description}\n\Дата: {record.date}\n\Постер: {record.poster}" for record in records])
 
     # Создаем разметку клавиатуры
     markup = types.InlineKeyboardMarkup()
@@ -78,7 +78,7 @@ def callback_inline(call: types.CallbackQuery):
     records = get_records_for_page(user_id, page, records_per_page)
 
     # Формируем сообщение
-    text = "\n\n".join([f"Title: {record.movie_name}\nDescription: {record.description}\nDate: {record.date}\nPoster: {record.poster}" for record in records])
+    text = "\n\n".join([f"Название: {record.movie_name}\nОписание: {record.description}\nДата: {record.date}\nПостер: {record.poster}" for record in records])
 
     # Создаем разметку клавиатуры
     markup = types.InlineKeyboardMarkup()
