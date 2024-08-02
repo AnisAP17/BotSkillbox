@@ -2,8 +2,8 @@ from loader import bot
 from telebot.types import Message
 from config_data.config import HEADERS
 import requests
-from models.models import History
-
+from models.models import History, User
+import datetime
 
 def movie_info(message: Message, movie):
     # Получаем данные о фильмах из ответа API
@@ -20,22 +20,30 @@ def movie_info(message: Message, movie):
             genres_list = ", ".join([genre['name'] for genre in genres]) if genres else 'N/A'
             ageRating = movie.get('ageRating', 'N/A')
             poster = movie.get('poster', {}).get('url', 'N/A')
-            bot.reply_to(message, f"Title: {title}\n"
-                    f"Description: {truncated_description}\n"
-                    f"Rating: {rating}\n"
-                    f"Year: {year}\n"
-                    f"Genres: {genres_list}\n"
-                    f"AgeRating: {ageRating}\n"
-                    f"Poster: {poster}")
+            bot.reply_to(message,
+                    text=(f"Title: {title}\n"
+                        f"Description: {truncated_description}\n"
+                        f"Rating: {rating}\n"
+                        f"Year: {year}\n"
+                        f"Genres: {genres_list}\n"
+                        f"AgeRating: {ageRating}\n"
+                        f"Poster: {poster}")
+                        )
     else:
         return "Movie not found."
 
 
-def search_movie(message: Message):
+
+def limit_search_movie(message: Message):
+    msg = bot.reply_to(message, "Please enter the number of options:")
+    bot.register_next_step_handler(msg, search_movie, message.text)
+
+
+def search_movie(message: Message, film):
     # Подготавливаем запрос для поиска фильма по имени
-    movie_name = message.text.split(" ")
+    movie_name = film.split(" ")
     movie_name_url = "%20".join(movie_name)
-    url = f"https://api.kinopoisk.dev/v1.4/movie/search?limit=1&query={movie_name_url}"
+    url = f"https://api.kinopoisk.dev/v1.4/movie/search?limit={message.text}&query={movie_name_url}"
     response = requests.get(url, headers=HEADERS)
     data = response.json()
 
@@ -43,6 +51,7 @@ def search_movie(message: Message):
     if data['docs']:
         movies = data['docs']
         for movie in movies:
+            user_info = User.select().where(User.user_id == message.from_user.id)
             title = movie.get('name', 'N/A')
             year = movie.get('year', 'N/A')
             description = movie.get('description', 'N/A')
@@ -55,7 +64,7 @@ def search_movie(message: Message):
 
             # Создаем запись в истории поиска
             History.create(
-                user_id = message.from_user.id or 'N/A',
+                user_id = user_info or 'N/A',
                 movie_name = title or 'N/A',
                 description = truncated_description or 'N/A',
                 rating = rating or 'N/A',
@@ -85,3 +94,50 @@ def truncate_description(description, word_limit):
     if len(words) > word_limit:
         return ' '.join(words[:word_limit]) + '...'
     return description
+
+
+def get_start_date(message: Message):
+    try:
+        start_date = datetime.datetime.strptime(message.text, '%Y-%m-%d')
+        bot.send_message(message.chat.id, 'Напишите конечную дату в формате ГГГГ-ММ-ДД:')
+        bot.register_next_step_handler(message, get_end_date, start_date)
+    except ValueError:
+        bot.send_message(message.chat.id, 'Неправильный формат даты. Пожалуйста, используйте формат ГГГГ-ММ-ДД:')
+        bot.register_next_step_handler(message, get_start_date)
+
+
+def get_end_date(message: Message, start_date):
+    try:
+        end_date = datetime.datetime.strptime(message.text, '%Y-%m-%d')
+        search_history_user(message, start_date, end_date)
+    except ValueError:
+        bot.send_message(message.chat.id, 'Неправильный формат даты. Пожалуйста, используйте формат ГГГГ-ММ-ДД:')
+        bot.register_next_step_handler(message, get_end_date, start_date)
+
+
+def search_history_user(message: Message, start_date, end_date):
+    user = User.select().where(User.user_id == message.from_user.id)
+
+    if user:
+        history = History.select().where(
+            (History.user_id == user) &
+            (History.date.between(start_date, end_date))
+        )
+
+        if history:
+            for user_history in history:
+                bot.send_message(
+                    chat_id=message.chat.id,
+                    text=(f"Title: {user_history.movie_name}\n"
+                        f"Description: {user_history.description}\n"
+                        f"Rating: {user_history.rating}\n"
+                        f"Year: {user_history.year}\n"
+                        f"Genres: {user_history.genres}\n"
+                        f"Age Rating: {user_history.ageRating}\n"
+                        f"Poster: {user_history.poster}")
+                            )
+        else:
+            bot.send_message(message.chat.id, 'История не найдена.')
+    else:
+        bot.send_message(message.chat.id, 'Пользователь не найден.')
+

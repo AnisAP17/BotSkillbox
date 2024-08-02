@@ -8,7 +8,7 @@ from peewee import (Model,
 import datetime
 import os
 
-# Определите путь к директории проекта 
+# Определите путь к директории проекта
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
 # Создайте путь к базе данных в папке 'database'
@@ -32,7 +32,7 @@ class User(BaseModel):
 
     def __str__(self):
         # Строковое представление пользователя (имя пользователя или ID)
-        return self.username or f"User: {self.user_id}"
+        return f"User: {self.user_id}; Username: {self.username}"
 
 # Модель для хранения истории поиска фильмов
 class History(BaseModel):
@@ -48,7 +48,7 @@ class History(BaseModel):
 
     def __str__(self):
         # Строковое представление записи в истории (имя пользователя и название фильма)
-        return f"Search by {self.user_id.username}: {self.movie_name} at {self.date}"
+        return f"Search by : {self.movie_name} at {self.date}"
 
 # Подключаемся к базе данных и создаем таблицы
 db.connect()
